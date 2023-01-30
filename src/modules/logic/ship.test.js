@@ -1,10 +1,18 @@
+/* global beforeEach, test, expect */
+
 import Ship from "./ship";
 
-/* global test, expect */
+let ship;
+
+beforeEach(() => {
+  ship = Ship(3);
+});
+
+test("Ship is created with the correct length", () => {
+  expect(ship.length).toBe(3);
+});
 
 test("Ship number of hits and sunk status update correctly", () => {
-  const ship = Ship(3);
-
   ship.hit();
   ship.hit();
   expect(ship.isSunk()).toBe(false);
