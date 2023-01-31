@@ -108,7 +108,9 @@ const Gameboard = () => {
     }
   };
 
-  return { getBoard, getShips, placeShip, receiveAttack };
+  const allShipsSunk = () => ships.every((ship) => ship.isSunk());
+
+  return { getBoard, getShips, placeShip, receiveAttack, allShipsSunk };
 };
 
 export default Gameboard;

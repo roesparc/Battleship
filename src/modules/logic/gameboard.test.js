@@ -153,3 +153,47 @@ describe("Test receiveAttack method", () => {
     expect(gameboard.getBoard()[5][5]).toBe("missed");
   });
 });
+
+describe("Test allShipsSunk method", () => {
+  test("Gameboard correctly reports when all ships have been sunk", () => {
+    gameboard.placeShip(0, 0, "horizontal");
+    gameboard.placeShip(0, 2, "horizontal");
+    gameboard.placeShip(0, 4, "horizontal");
+    gameboard.placeShip(0, 6, "horizontal");
+    gameboard.placeShip(0, 8, "horizontal");
+
+    expect(gameboard.allShipsSunk()).toBe(false);
+
+    gameboard.receiveAttack(0, 0);
+    gameboard.receiveAttack(1, 0);
+    gameboard.receiveAttack(2, 0);
+    gameboard.receiveAttack(3, 0);
+    gameboard.receiveAttack(4, 0);
+
+    expect(gameboard.allShipsSunk()).toBe(false);
+
+    gameboard.receiveAttack(0, 2);
+    gameboard.receiveAttack(1, 2);
+    gameboard.receiveAttack(2, 2);
+    gameboard.receiveAttack(3, 2);
+
+    expect(gameboard.allShipsSunk()).toBe(false);
+
+    gameboard.receiveAttack(0, 4);
+    gameboard.receiveAttack(1, 4);
+    gameboard.receiveAttack(2, 4);
+
+    expect(gameboard.allShipsSunk()).toBe(false);
+
+    gameboard.receiveAttack(0, 6);
+    gameboard.receiveAttack(1, 6);
+    gameboard.receiveAttack(2, 6);
+
+    expect(gameboard.allShipsSunk()).toBe(false);
+
+    gameboard.receiveAttack(0, 8);
+    gameboard.receiveAttack(1, 8);
+
+    expect(gameboard.allShipsSunk()).toBe(true);
+  });
+});
