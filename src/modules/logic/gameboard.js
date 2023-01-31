@@ -99,7 +99,16 @@ const Gameboard = () => {
     ships.push(ship);
   };
 
-  return { getBoard, getShips, placeShip };
+  const receiveAttack = (x, y) => {
+    if (typeof board[x][y] === "object") {
+      board[x][y].hit();
+      board[x][y] = "hit";
+    } else {
+      board[x][y] = "missed";
+    }
+  };
+
+  return { getBoard, getShips, placeShip, receiveAttack };
 };
 
 export default Gameboard;
