@@ -1,0 +1,31 @@
+:root {
+  font-size: 12px;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
+main > div {
+  background-color: black;
+  border: solid 2px;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 1px;
+  width: max-content;
+}
+
+main > div > div {
+  background-color: white;
+  width: 3rem;
+  height: 3rem;
+}
+
+.ship {
+  background-color: rgb(71, 121, 121);
+}
+
+.unavailable {
+  background-color: rgb(158, 142, 142);
+}
