@@ -7,7 +7,8 @@
   margin: 0;
 }
 
-main > div {
+.player-board,
+.bot-board {
   background-color: black;
   border: solid 2px;
   display: grid;
@@ -16,7 +17,7 @@ main > div {
   width: max-content;
 }
 
-main > div > div {
+.cell {
   background-color: white;
   width: 3rem;
   height: 3rem;
@@ -28,4 +29,21 @@ main > div > div {
 
 .unavailable {
   background-color: rgb(158, 142, 142);
+}
+
+.missed {
+  background-color: rgb(35, 143, 8);
+}
+
+.hit {
+  background-color: red;
+}
+
+.player-wins,
+.bot-wins {
+  display: none;
+}
+
+.reveal-winner {
+  display: block;
 }
