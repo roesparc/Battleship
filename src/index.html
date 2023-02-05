@@ -16,11 +16,20 @@
     </header>
 
     <main>
-      <div class="bot-wins">Bot Wins</div>
-      <div class="player-board"></div>
+      <div class="game-over hide-game-over">
+        <p class="announce-winner"></p>
+        <button class="play-again">Play Again</button>
+      </div>
 
-      <div class="player-wins">You Win!</div>
-      <div class="bot-board"></div>
+      <div class="player-board player-setup"></div>
+
+      <div class="bot-board hide-bot-board"></div>
+
+      <div class="game-setup">
+        <p class="welcome">Place your fleet</p>
+        <p class="place-ship">Aircraft Carrier</p>
+        <button class="rotate-button">Rotate</button>
+      </div>
     </main>
 
     <footer>
