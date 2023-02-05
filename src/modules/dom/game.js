@@ -1,28 +1,21 @@
 import Gameboard from "../logic/gameboard";
 import Player from "../logic/player";
 
-const player = Player("player");
-const playerGameboard = Gameboard();
+let player;
+let playerGameboard;
 
-const bot = Player("bot");
-const botGameboard = Gameboard();
+let bot;
+let botGameboard;
 
-let shipPosition = "horizontal";
+let shipPosition;
 
-const rotateBtn = document.querySelector(".rotate-button");
-rotateBtn.addEventListener("click", () => {
+const rotateShip = () => {
   if (shipPosition === "horizontal") {
     shipPosition = "vertical";
   } else {
     shipPosition = "horizontal";
   }
-});
-
-bot.placeShip(botGameboard);
-bot.placeShip(botGameboard);
-bot.placeShip(botGameboard);
-bot.placeShip(botGameboard);
-bot.placeShip(botGameboard);
+};
 
 const addPlayerStyle = (cell, x, y, gameStarted) => {
   if (typeof playerGameboard.getBoard()[x][y] === "object") {
@@ -60,17 +53,53 @@ const addBotStyle = (cell, x, y) => {
   }
 };
 
+const startGame = () => {
+  const playerBoard = document.querySelector(".player-board");
+  playerBoard.classList.remove("player-setup");
+
+  const botBoard = document.querySelector(".bot-board");
+  botBoard.classList.remove("hide-bot-board");
+
+  const gameSetup = document.querySelector(".game-setup");
+  gameSetup.classList.add("hide-game-setup");
+};
+
 const validateStart = (displayPlayerDomBoard) => {
   if (playerGameboard.getShips().length > 4) {
     displayPlayerDomBoard(true);
+    startGame();
   } else {
     displayPlayerDomBoard();
+  }
+};
+
+const updateShipToPlace = () => {
+  const placingShip = document.querySelector(".place-ship");
+  const currentShip = playerGameboard.getShips().length;
+
+  switch (currentShip) {
+    case 1:
+      placingShip.textContent = "Battleship";
+      break;
+    case 2:
+      placingShip.textContent = "Cruiser";
+      break;
+    case 3:
+      placingShip.textContent = "Submarine";
+      break;
+    case 4:
+      placingShip.textContent = "Destroyer";
+      break;
+    default:
+      placingShip.textContent = "Aircraft Carrier";
+      break;
   }
 };
 
 const placeShip = (x, y, displayPlayerDomBoard) => {
   player.placeShip(playerGameboard, x, y, shipPosition);
 
+  updateShipToPlace();
   validateStart(displayPlayerDomBoard);
 };
 
@@ -91,8 +120,7 @@ const previewHorizontal = (cell, removePreview, shipSequence) => {
     const shipCell = playerDomBoard.children[coordinate + i];
 
     if (removePreview) {
-      shipCell.classList.remove("preview-ship");
-      shipCell.classList.remove("invalid-placement");
+      shipCell.classList.remove("preview-ship", "invalid-placement");
     } else {
       const isValidPlacement = horizontalFloor === extendedFloor;
 
@@ -140,6 +168,58 @@ const previewShip = (cell, removePreview) => {
   }
 };
 
+const disableGame = () => {
+  const cells = document.querySelectorAll(".cell");
+
+  cells.forEach((cell) => {
+    const coordinate = cell;
+    coordinate.disabled = true;
+  });
+};
+
+const displayWinner = (winner) => {
+  const gameOver = document.querySelector(".game-over");
+  gameOver.classList.remove("hide-game-over");
+
+  const announceWinner = document.querySelector(".announce-winner");
+
+  if (winner === "player") {
+    announceWinner.textContent = "Player Wins!";
+    announceWinner.classList.remove("bot-wins");
+    announceWinner.classList.add("player-wins");
+  } else {
+    announceWinner.textContent = "Bot Wins";
+    announceWinner.classList.remove("player-wins");
+    announceWinner.classList.add("bot-wins");
+  }
+};
+
+const checkWinConditions = () => {
+  if (playerGameboard.allShipsSunk()) {
+    displayWinner("bot");
+    disableGame();
+  }
+
+  if (botGameboard.allShipsSunk()) {
+    displayWinner("player");
+    disableGame();
+
+    return true;
+  }
+
+  return false;
+};
+
+function gameLoop(x, y, displayPlayerDomBoard, displayBotDomBoard) {
+  player.attack(botGameboard, x, y);
+  displayBotDomBoard();
+  if (checkWinConditions()) return;
+
+  bot.attack(playerGameboard);
+  displayPlayerDomBoard(true);
+  checkWinConditions();
+}
+
 const displayPlayerDomBoard = (gameStarted) => {
   const playerDomBoard = document.querySelector(".player-board");
   playerDomBoard.textContent = "";
@@ -174,7 +254,9 @@ const displayBotDomBoard = () => {
     for (let x = 0; x < 10; x += 1) {
       const cell = document.createElement("button");
       cell.classList.add("cell");
-      cell.addEventListener("click", () => gameLoop(x, y));
+      cell.addEventListener("click", () =>
+        gameLoop(x, y, displayPlayerDomBoard, displayBotDomBoard)
+      );
 
       addBotStyle(cell, x, y);
 
@@ -183,51 +265,45 @@ const displayBotDomBoard = () => {
   }
 };
 
-const disableGame = () => {
-  const cells = document.querySelectorAll(".cell");
+const init = () => {
+  player = Player("player");
+  playerGameboard = Gameboard();
 
-  cells.forEach((cell) => {
-    const coordinate = cell;
-    coordinate.disabled = true;
-  });
-};
+  bot = Player("bot");
+  botGameboard = Gameboard();
 
-const displayWinner = (winner) => {
-  const playerWinContainer = document.querySelector(".player-wins");
-  const botWinContainer = document.querySelector(".bot-wins");
-
-  if (winner === "player") {
-    playerWinContainer.classList.add("reveal-winner");
-  } else {
-    botWinContainer.classList.add("reveal-winner");
-  }
-};
-
-const checkWinConditions = () => {
-  if (playerGameboard.allShipsSunk()) {
-    displayWinner("bot");
-    disableGame();
+  for (let i = 0; i < 5; i += 1) {
+    bot.placeShip(botGameboard);
   }
 
-  if (botGameboard.allShipsSunk()) {
-    displayWinner("player");
-    disableGame();
+  shipPosition = "horizontal";
 
-    return true;
-  }
-
-  return false;
-};
-
-function gameLoop(x, y) {
-  player.attack(botGameboard, x, y);
+  displayPlayerDomBoard();
   displayBotDomBoard();
-  if (checkWinConditions()) return;
+};
+init();
 
-  bot.attack(playerGameboard);
-  displayPlayerDomBoard(true);
-  checkWinConditions();
-}
+const showGameSetup = () => {
+  const gameOver = document.querySelector(".game-over");
+  gameOver.classList.add("hide-game-over");
 
-displayPlayerDomBoard();
-displayBotDomBoard();
+  const playerBoard = document.querySelector(".player-board");
+  playerBoard.classList.add("player-setup");
+
+  const botBoard = document.querySelector(".bot-board");
+  botBoard.classList.add("hide-bot-board");
+
+  const gameSetup = document.querySelector(".game-setup");
+  gameSetup.classList.remove("hide-game-setup");
+};
+
+const restartGame = () => {
+  showGameSetup();
+  init();
+};
+
+const rotateBtn = document.querySelector(".rotate-button");
+rotateBtn.addEventListener("click", rotateShip);
+
+const playAgain = document.querySelector(".play-again");
+playAgain.addEventListener("click", restartGame);
