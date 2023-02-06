@@ -1,5 +1,21 @@
+@import url("https://fonts.googleapis.com/css2?family=Averia+Libre&family=Staatliches&display=swap");
+
 :root {
   font-size: 12px;
+  font-family: "Averia Libre", sans-serif;
+  color: #454545;
+
+  --opacity-hide: 0;
+  --scale-small: scale(0.9);
+  --scale-normal: scale(1);
+  --transition-standard: all 1s ease;
+  --transition-quick: all 500ms ease;
+
+  --body-background-color: #4779791f;
+  --main-color: #477979;
+  --main-dark-color: #454545;
+  --player-board-color: #96d5ff;
+  --bot-board-color: #ff9797;
 }
 
 * {
@@ -7,12 +23,29 @@
   margin: 0;
 }
 
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--body-background-color);
+}
+
 header {
   text-align: center;
-  margin-bottom: 4rem;
+  padding: 1rem;
+}
+
+h1 {
+  font-family: "Staatliches", sans-serif;
+  font-size: 9rem;
 }
 
 main {
+  flex-grow: 1;
+  margin-top: 4rem;
+}
+
+.content {
   position: relative;
   display: flex;
   justify-content: center;
@@ -21,16 +54,175 @@ main {
 
 .player-board,
 .bot-board {
-  background-color: black;
-  border: solid 2px;
   display: grid;
   grid-template-columns: repeat(10, 1fr);
-  gap: 1px;
   width: max-content;
+  border: none;
+  gap: 2px;
+  background-color: transparent;
+  transition: var(--transition-standard);
+}
+
+.player-board {
+  transform: var(--scale-small);
+}
+
+.player-setup {
+  transform: var(--scale-normal);
 }
 
 .hide-bot-board {
-  display: none;
+  transform: scale(0.9);
+  opacity: 0;
+  z-index: -1;
+}
+
+.cell {
+  position: relative;
+  background-color: transparent;
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid var(--main-dark-color);
+  border-radius: 3px;
+}
+
+.player-board > .cell {
+  box-shadow: 0 0 3px var(--player-board-color);
+  cursor: auto;
+}
+
+.player-setup > .cell {
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.bot-board > .cell {
+  box-shadow: 0 0 3px var(--bot-board-color);
+}
+
+.bot-board > .cell:hover {
+  box-shadow: 0 0 3px inset #ff7a7a;
+}
+
+.bot-board > .cell {
+  cursor: crosshair;
+}
+
+.player-setup > .cell:active,
+.bot-board > .cell:active {
+  transform: var(--scale-small);
+}
+
+.preview-ship {
+  background-color: #477979a4;
+}
+
+.invalid-placement {
+  background-color: #ff0000;
+}
+
+.ship {
+  background-color: var(--main-color);
+}
+
+.unavailable {
+  background-color: #9b151547;
+}
+
+.missed {
+  background-color: #447b364f;
+}
+.missed::after {
+  font-family: "Font Awesome 5 Free";
+  content: "\f111";
+  color: var(--main-dark-color);
+  position: absolute;
+  font-weight: bold;
+  font-size: 0.5rem;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.bot-board .missed:hover {
+  cursor: auto;
+  box-shadow: 0 0 3px var(--bot-board-color);
+}
+.bot-board .missed:active {
+  transform: none;
+}
+
+.hit {
+  background-color: #bf242470;
+}
+.hit::after {
+  font-family: "Font Awesome 5 Free";
+  content: "\f00d";
+  color: var(--main-dark-color);
+  position: absolute;
+  font-weight: bold;
+  font-size: 1.1rem;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.bot-board .hit:hover {
+  cursor: auto;
+  box-shadow: 0 0 3px var(--bot-board-color);
+}
+.bot-board .hit:active {
+  transform: none;
+}
+
+.bot-board button:disabled:hover {
+  cursor: auto;
+  box-shadow: 0 0 3px var(--bot-board-color);
+}
+.bot-board button:disabled:active {
+  transform: none;
+}
+
+.game-setup {
+  width: 378px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-left: -426px;
+  transition: var(--transition-standard);
+}
+
+.hide-game-setup {
+  transform: var(--scale-small);
+  opacity: var(--opacity-hide);
+  z-index: -1;
+}
+
+.welcome {
+  font-size: 3.5rem;
+}
+
+.place-ship {
+  color: var(--main-color);
+  font-weight: bold;
+  font-size: 2.5rem;
+  margin-top: 1rem;
+}
+
+.action-button {
+  font-family: "Averia Libre", sans-serif;
+  background-color: var(--main-color);
+  color: white;
+  border: none;
+  font-size: 2rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+.action-button:hover {
+  background-color: #406363;
+}
+.action-button:active {
+  transform: scale(0.95);
 }
 
 .game-over {
@@ -38,42 +230,49 @@ main {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+
+  background-color: #ffffffc4;
+  padding: 1rem;
+  border-radius: 1rem;
+  transition: var(--transition-quick);
 }
 
 .hide-game-over {
-  display: none;
+  opacity: var(--opacity-hide);
+  transform: translate(-50%, -50%) var(--scale-small);
+  z-index: -1;
 }
 
-.cell {
-  background-color: white;
-  width: 3rem;
-  height: 3rem;
+.announce-winner {
+  font-family: "Staatliches", sans-serif;
+  font-size: 5rem;
+  color: var(--main-color);
 }
 
-.preview-ship {
-  background-color: aquamarine;
+.play-again {
+  display: block;
+  margin: auto;
 }
 
-.invalid-placement {
-  background-color: red;
+footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  font-size: 2rem;
 }
 
-.ship {
-  background-color: rgb(71, 121, 121);
+footer a {
+  color: var(--main-color);
+  text-decoration: none;
+  transition: var(--transition-quick);
 }
 
-.unavailable {
-  background-color: rgb(158, 142, 142);
+footer a:first-child:hover {
+  text-decoration: underline;
 }
 
-.missed {
-  background-color: rgb(35, 143, 8);
-}
-
-.hit {
-  background-color: red;
-}
-
-.hide-game-setup {
-  display: none;
+footer a:last-child:hover {
+  transform: scale(1.2) rotate(360deg);
 }
